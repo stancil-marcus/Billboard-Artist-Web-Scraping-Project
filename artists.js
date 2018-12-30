@@ -1,6 +1,5 @@
 //Marcus Stancil
-//Please accept this. I literally only forgot to implement the featured
-//artist feature, but it's in her now.
+
 var artists = [];
 var artist;
 var featuredArtists = [];
@@ -12,13 +11,13 @@ var arr = [];
 let artistCount = 0;
 var count = 0;
 
-
+/*Receiving the name of artists*/
 for (let x = 2; x < process.argv.length; x++){
 	
     artists = artists.concat(process.argv[x]);
 }
 
-
+/*Setting up the NodeMailer so that the application can communicate with the e-mail*/
 let transporter = nodeMailer.createTransport({
 	host: 'smtp.gmail.com',
 	port: 465,
@@ -31,12 +30,13 @@ let transporter = nodeMailer.createTransport({
     }
 });
 
+/*Scraping the Billboard website to make a list of the artists on the charts*/
 request('https://www.billboard.com/charts/rap-song', function (error, response, html){
 	if(!error && response.statusCode == 200){
 		var $ = cheerio.load(html);
 			$('a.chart-row__artist').each(function(i, element){ 
 
-    		
+    		/*If artists were found, the artists and their song is added to the list of artists and songs to be sent to the e-mail*/
 			for (let y = 0; y < artists.length; y++){
 				if(artists[y] == $(this).text().trim())
 				{
@@ -50,6 +50,7 @@ request('https://www.billboard.com/charts/rap-song', function (error, response, 
 			}
 			})
 			
+			/*Checks to see if the artist is featured on any songs so that the arist and the song can be added to the list that will be sent to the e-mail*/
 			$('span.chart-row__artist').each(function(i, element){ 
 				for (let y = 0; y < artists.length; y++){
 					if($(this).text().trim().includes("Featuring " + artists[y]))
@@ -65,7 +66,7 @@ request('https://www.billboard.com/charts/rap-song', function (error, response, 
 			})
 
 			
-	
+		/*If the artist count is 0, then the user will recieve an e-mail indicating the artist wasn't on the charts*/
 		if(artistCount == 0)
 			{
 				let mailOptions = {
@@ -83,6 +84,7 @@ request('https://www.billboard.com/charts/rap-song', function (error, response, 
     				console.log('Message sent: ' + info.response);
 					});
 			}
+			/*If artists were found on the charts, then the user will recieve an email with the list of the artist's songs on the charts*/
 		else if (artistCount > 0 && arr.length > 0)
 		{
 			arr = arr.toString();
@@ -103,6 +105,7 @@ request('https://www.billboard.com/charts/rap-song', function (error, response, 
 					});
 		}
 }
+/*Scraper did not reach the Billboard website*/
 else{
 	console.log("Nope didn't reach the webiste");
 }
