@@ -11,7 +11,7 @@ var arr = [];
 let artistCount = 0;
 var count = 0;
 
-/*Receiving the name of artists*/
+/*Receiving the name of artists*/ 
 for (let x = 2; x < process.argv.length; x++){
 	
     artists = artists.concat(process.argv[x]);
